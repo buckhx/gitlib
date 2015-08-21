@@ -27,7 +27,7 @@ func (repo *Repository) Init() (err error) {
 	return
 }
 
-func (repo *Repository) Add(paths []string) (err error) {
+func (repo *Repository) Add(paths ...string) (err error) {
 	_, err = repo.Op("add", NOF, paths...)
 	return
 }
@@ -50,8 +50,14 @@ func (repo *Repository) Exclude(patterns ...string) (err error) {
 	return
 }
 
-func (repo *Repository) Push() (err error) {
-	_, err = repo.Op("push", NOF)
+func (repo *Repository) Push(remote string, branch string) (err error) {
+	_, err = repo.Op("push", NOF, remote, branch)
+	return
+}
+
+func (repo *Repository) SetRemote(remote string, url string) (err error) {
+	_, err = repo.Op("remote", NOF, "add", remote, url)
+	_, err = repo.Op("remote", NOF, "set-url", remote, url)
 	return
 }
 
@@ -66,6 +72,7 @@ func Operation(command string, flags []string, args ...string) (string, error) {
 	if err != nil {
 		err = fmt.Errorf("%s\n%s\n", stderr.String(), strings.Join(append([]string{"git"}, args...), " "))
 	}
+	fmt.Println(strings.Join(append([]string{"git"}, args...), " "))
 	return stdout.String(), err
 }
 

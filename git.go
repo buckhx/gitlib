@@ -3,6 +3,7 @@ package git
 import (
 	"bytes"
 	"fmt"
+	"os"
 	"os/exec"
 	pathlib "path"
 	"strings"
@@ -34,7 +35,19 @@ func (repo *Repository) Add(paths []string) (err error) {
 func (repo *Repository) Commit(msg string) (err error) {
 	_, err = repo.Op("commit", NOF, "-am", msg)
 	return
+}
 
+// Append these patterns to .git/info/exclude
+func (repo *Repository) Exclude(patterns ...string) (err error) {
+	excludef, err := os.OpenFile(pathlib.Join(repo.Path, ".git/info/exclude"), os.O_APPEND|os.O_WRONLY, 0600)
+	defer excludef.Close()
+	if err != nil {
+		return
+	}
+	for _, pattern := range patterns {
+		_, err = excludef.WriteString(pattern+"\n")
+	}
+	return
 }
 
 func (repo *Repository) Push() (err error) {

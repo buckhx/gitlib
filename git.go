@@ -32,6 +32,11 @@ func (repo *Repository) Add(paths ...string) (err error) {
 	return
 }
 
+func (repo *Repository) Checkout(args ...string) (err error) {
+	_, err = repo.Op("checkout", NOF, args...)
+	return
+}
+
 func (repo *Repository) Commit(msg string) (err error) {
 	_, err = repo.Op("commit", NOF, "-am", "\""+msg+"\"")
 	return
@@ -47,6 +52,11 @@ func (repo *Repository) Exclude(patterns ...string) (err error) {
 	for _, pattern := range patterns {
 		_, err = excludef.WriteString(pattern + "\n")
 	}
+	return
+}
+
+func (repo *Repository) Fetch(remote string) (err error) {
+	_, err = repo.Op("fetch", NOF, remote)
 	return
 }
 
@@ -79,7 +89,7 @@ func Operation(command string, flags []string, args ...string) (string, error) {
 	}
 	fmt.Println(strings.Join(append([]string{"git"}, args...), " "))
 	fmt.Printf("\t" + strings.Replace(stdout.String(), "\n", "\n\t", -1))
-	//fmt.Println("\t" + strings.Replace(stderr.String(), "\n", "\n\t", -1))
+	fmt.Println("\t" + strings.Replace(stderr.String(), "\n", "\n\t", -1))
 	return stdout.String(), err
 }
 

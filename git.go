@@ -18,7 +18,8 @@ type Repository struct {
 }
 
 func (repo *Repository) Op(cmd string, flags []string, args ...string) (out string, err error) {
-	flags = append(flags, "-C", repo.Path)
+	//flags = append(flags, "-C", repo.Path) incompatible with git < 1.8.5
+	flags = append(flags, "--git-dir", pathlib.Join(repo.Path, ".git"), "--work-tree", repo.Path)
 	return Operation(cmd, flags, args...)
 }
 
